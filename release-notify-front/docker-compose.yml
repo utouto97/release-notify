@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  front:
+    image: node:18
+    command: npm start
+    working_dir: /app
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/app
