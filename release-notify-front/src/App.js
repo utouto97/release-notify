@@ -17,6 +17,7 @@ const App = () => {
   const [follows, setFollows] = useState({});
   const [webhookUrl, setWebhookUrl] = useState('');
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const login = async (e) => {
     e.preventDefault();
@@ -52,12 +53,14 @@ const App = () => {
   });
 
   useEffect(() => {
+    setLoading(true);
     (async () => {
       if (token) {
         setProducts(await getProducts(token));
         const settings = await getSettings(token);
         setFollows(settings.follows.reduce((a, v) => ({ ...a, [v]: true }), {}));
         setWebhookUrl(settings.webhook_url);
+        setLoading(false);
       }
     })();
   }, [token]);
@@ -72,6 +75,10 @@ const App = () => {
       !token ?
       <div>
       <button className='px-4 py-2 border rounded hover:bg-gray-200' onClick={login}>Google Login</button>
+      </div>
+      : loading ?
+      <div className="flex justify-center">
+        <div className="animate-spin mt-20 h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
       </div>
       :
       <div>
