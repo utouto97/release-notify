@@ -32,7 +32,7 @@ export const getSettings = async (token) => {
 
 export const postSettings = async (token, follows, webhookUrl) => {
   try {
-    const res = await fetch(API_BASEURL + '/settings', {
+    await fetch(API_BASEURL + '/settings', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -16,6 +16,7 @@ const App = () => {
   const [products, setProducts] = useState([]);
   const [follows, setFollows] = useState({});
   const [webhookUrl, setWebhookUrl] = useState('');
+  const [saving, setSaving] = useState(false);
 
   const login = async (e) => {
     e.preventDefault();
@@ -28,9 +29,12 @@ const App = () => {
   };
 
   const save = async () => {
+    if (saving) return;
+    setSaving(true);
     if (await postSettings(token, follows, webhookUrl)) {
       alert('saved successfully');
     }
+    setSaving(false);
   };
 
   useEffect(() => {
@@ -72,7 +76,7 @@ const App = () => {
       :
       <div>
         <div className='mt-4'>
-          <button className='px-4 py-2 rounded-xl border-2 hover:bg-gray-200' onClick={save}>save</button>
+          <button className='px-4 py-2 rounded-xl border-2 hover:bg-gray-200 disabled:opacity-75 disabled:cursor-not-allowed' onClick={save} disabled={saving}>save</button>
         </div>
         <div className='mt-4 w-full flex justify-stretch items-center'>
           <label className='ml-2 text-sm font-medium text-gray-900 mw-20'>webhook_url</label>
