@@ -67,6 +67,14 @@ const App = () => {
     })();
   }, [token]);
 
+  const checkAll = () => {
+    setFollows(products.reduce((a, v) => ({ ...a, [v]: true }), {}));
+  };
+
+  const uncheckAll = () => {
+    setFollows(products.reduce((a, v) => ({ ...a, [v]: false }), {}));
+  };
+
   return (
     <div className="mt-4 w-4/5 mx-auto">
       <div className="w-full mt-2">
@@ -107,6 +115,20 @@ const App = () => {
                 onChange={(e) => setWebhookUrl(e.target.value)}
                 className="ml-4 bg-gray-50 border border-gray-300 text-sm rounded-xl focus:ring-black-500 w-full p-2"
               />
+            </div>
+            <div className="mt-4">
+              <button
+                className="px-4 py-2 rounded-xl border-2 hover:bg-gray-200 disabled:opacity-75 disabled:cursor-not-allowed"
+                onClick={checkAll}
+              >
+                check all
+              </button>
+              <button
+                className="ml-2 px-4 py-2 rounded-xl border-2 hover:bg-gray-200 disabled:opacity-75 disabled:cursor-not-allowed"
+                onClick={uncheckAll}
+              >
+                uncheck all
+              </button>
             </div>
             <div className="mt-4 grid grid-cols-4">
               {products.map((e) => (
