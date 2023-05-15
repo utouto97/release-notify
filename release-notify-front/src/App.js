@@ -6,6 +6,7 @@ import {
   GoogleAuthProvider,
   signInWithRedirect,
   onAuthStateChanged,
+  signOut,
 } from "firebase/auth";
 import { getProducts, getSettings, postSettings } from "./api";
 
@@ -23,6 +24,11 @@ const App = () => {
     e.preventDefault();
     const provider = new GoogleAuthProvider();
     await signInWithRedirect(auth, provider);
+  };
+
+  const logout = async (e) => {
+    signOut(auth);
+    setToken("");
   };
 
   const onChangeCheckbox = (e) => {
@@ -103,6 +109,12 @@ const App = () => {
                 disabled={saving}
               >
                 save
+              </button>
+              <button
+                className="ml-2 px-4 py-2 rounded-xl border-2 hover:bg-gray-200 disabled:opacity-75 disabled:cursor-not-allowed"
+                onClick={logout}
+              >
+                Logout
               </button>
             </div>
             <div className="mt-4 w-full flex justify-stretch items-center">
