@@ -130,7 +130,7 @@ const App = () => {
                 uncheck all
               </button>
             </div>
-            <div className="mt-4 grid grid-cols-4">
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-4">
               {products.map((e) => (
                 <div key={e}>
                   <input
