@@ -1,0 +1,55 @@
+name: build_and_deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "release-notify-front/**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./release-notify-front
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Setup Nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install and build
+        run: |
+          npm ci
+          npm run build
+        env:
+          CI: true
+          PUBLIC_URL: /release-notify
+          REACT_APP_API_BASEURL: ${{ secrets.REACT_APP_API_BASEURL }}
+          REACT_APP_API_KEY: ${{ secrets.REACT_APP_API_KEY }}
+          REACT_APP_AUTH_DOMAIN: ${{ secrets.REACT_APP_AUTH_DOMAIN }}
+          REACT_APP_PROJECT_ID: ${{ secrets.REACT_APP_PROJECT_ID }}
+          REACT_APP_STORAGE_BUCKET: ${{ secrets.REACT_APP_STORAGE_BUCKET }}
+          REACT_APP_MESSAGING_SENDER_ID: ${{ secrets.REACT_APP_MESSAGING_SENDER_ID }}
+          REACT_APP_APP_ID: ${{ secrets.REACT_APP_APP_ID }}
+          REACT_APP_MEASUREMENT_ID: ${{ secrets.REACT_APP_MEASUREMENT_ID }}
+      - uses: actions/upload-pages-artifact@v1
+        with:
+          path: release-notify-front/build
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
