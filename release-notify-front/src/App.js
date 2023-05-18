@@ -13,6 +13,7 @@ import { getProducts, getSettings, postSettings } from "./api";
 const App = () => {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const [initialized, setInitialized] = useState(false);
   const [token, setToken] = useState("");
   const [products, setProducts] = useState([]);
   const [follows, setFollows] = useState({});
@@ -45,23 +46,30 @@ const App = () => {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const t = await user.getIdToken(false);
-        setToken(t);
-      } else {
-        setToken("");
-      }
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      async (user) => {
+        setInitialized(true);
+        if (user) {
+          const t = await user.getIdToken(false);
+          setToken(t);
+        } else {
+          setToken("");
+        }
 
-      // console.log(token);
-      unsubscribe();
-    });
+        // console.log(token);
+        return () => {
+          unsubscribe();
+        };
+      },
+      (e) => console.log(e)
+    );
   });
 
   useEffect(() => {
-    setLoading(true);
-    (async () => {
-      if (token) {
+    if (token) {
+      setLoading(true);
+      (async () => {
         setProducts(await getProducts(token));
         const settings = await getSettings(token);
         setFollows(
@@ -69,8 +77,8 @@ const App = () => {
         );
         setWebhookUrl(settings.webhook_url);
         setLoading(false);
-      }
-    })();
+      })();
+    }
   }, [token]);
 
   const checkAll = () => {
@@ -87,7 +95,11 @@ const App = () => {
         <h1 className="text-3xl font-bold">Release Notify</h1>
       </div>
       <div className="w-full mt-2">
-        {!token ? (
+        {!initialized || loading ? (
+          <div className="flex justify-center">
+            <div className="animate-spin mt-20 h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
+          </div>
+        ) : !token ? (
           <div>
             <button
               className="px-4 py-2 border rounded hover:bg-gray-200"
@@ -95,10 +107,6 @@ const App = () => {
             >
               Google Login
             </button>
-          </div>
-        ) : loading ? (
-          <div className="flex justify-center">
-            <div className="animate-spin mt-20 h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
           </div>
         ) : (
           <div>
